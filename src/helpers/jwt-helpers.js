@@ -27,20 +27,18 @@ const generarJWT = ( _id = '' ) => {
 
 /**
  * Renueva el jwt del usuario autenticado si a su jwt le quedan 4 horas para expirar
- * @param {*} token Es el jwt actual del usuario autenticado
- * @param {*} usuarioAuth Es el usuario autenticado
+ * @param {*} decoded Es el jwt actual del usuario autenticado
+ * @param {*} usuario Es el usuario autenticado
  * @returns El nuevo token en caso de que se haya renovado, sino retorna undefined
  */
-const renovarJWT = async (token = '', usuarioAuth) => {
-    try {
-        const decoded = jwt.verify( token, SECRET );
-    
+const renovarJWT = async (decoded, usuario) => {
+    try {    
         const fechaExpiracion = new Date( decoded.exp * 1000 );
     
         const milisegRestantes = fechaExpiracion - new Date();
     
         if(milisegRestantes <= 14400000) {
-            const token = await generarJWT( usuarioAuth._id );
+            const token = await generarJWT( usuario._id );
             return token;
         }
     } catch (error) {
@@ -55,11 +53,6 @@ const renovarJWT = async (token = '', usuarioAuth) => {
  */
 const validarJWT = async (token = '') => {
     try {
-        
-        if(!token) {
-            return {msg: 'no se envio ningun el token'}
-        }
-
         const { _id } = jwt.verify( token, SECRET );
 
         const usuario = await Usuario.findById( _id ); 
@@ -72,10 +65,13 @@ const validarJWT = async (token = '') => {
             return {msg: 'usuario deshabilitado'}
         }
 
-        return {
-            usuario,
-            msg: 'validación exitosa'
+        const tokenRenovado = await renovarJWT( token, usuario );
+
+        if(tokenRenovado) {
+            return { tokenRenovado, usuario };
         }
+
+        return { usuario };
 
     } catch (error) {
         return {msg: 'token no valido'};
