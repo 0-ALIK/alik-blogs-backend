@@ -1,6 +1,7 @@
 const { request, response } = require('express');
 const { errorPeticion } = require('../helpers/functions-helpers');
 const { Usuario } = require('../models');
+const { genSaltSync, hashSync } = require('bcrypt')
 
 const getAll = async (req = request, res = response) => {
     try {
@@ -49,7 +50,23 @@ const getByName = async (req = request, res = response) => {
 };
 
 const postUser = async (req = request, res = response) => {
-    
+    try {
+        const { nombre, pass, correo } = req.body;
+
+        const usuario = new Usuario({
+            nombre,
+            pass,
+            correo
+        });
+
+        const salt = genSaltSync();
+        usuario.pass = hashSync( pass, salt );
+
+        await usuario.save();
+        
+    } catch (error) {
+        errorPeticion( res );
+    }
 };
 
 module.exports = {

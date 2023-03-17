@@ -1,5 +1,11 @@
 const { Usuario } = require("../models");
 
+const nameRegExp = /^[a-zA-Z0-9_]+$/; 
+
+const correoRegExp = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+
+const passRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()_+\-=\[\]{};':"\\|,.<>\/?])/;
+
 const existeUsuarioById = async (_id = '') => {
     try {
         const usuario = await Usuario.findById( _id );
@@ -24,5 +30,8 @@ const noExisteUsuarioByCorreo = async (correo = '') => {
 
 module.exports = {
     noExisteUsuarioByCorreo,
-    existeUsuarioById
+    existeUsuarioById,
+    nameRegExp,
+    correoRegExp,
+    passRegExp
 };
