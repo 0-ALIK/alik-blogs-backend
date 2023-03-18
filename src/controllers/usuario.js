@@ -1,15 +1,17 @@
 const { request, response } = require('express');
-const { errorPeticion } = require('../helpers/functions-helpers');
+const { errorPeticion, arregloErroresSave } = require('../helpers/functions-helpers');
 const { Usuario } = require('../models');
 const { genSaltSync, hashSync } = require('bcrypt')
 
 const getAll = async (req = request, res = response) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
+
+        console.log(Usuario);
     
-        const [cantidad, usuarios] = Promise.all([
-            await Usuario.countDocuments( {estado: true} ),
-            await Usuario.find( {estado: true} )
+        const [cantidad, usuarios] = await Promise.all([
+            Usuario.countDocuments( {estado: true} ),
+            Usuario.find( {estado: true} )
                 .limit( Number(limit) )
                 .skip( Number(skip) )
         ]);
@@ -49,7 +51,7 @@ const getByName = async (req = request, res = response) => {
     }
 };
 
-const postUser = async (req = request, res = response) => {
+const postUsuario = async (req = request, res = response) => {
     try {
         const { nombre, pass, correo } = req.body;
 
@@ -63,7 +65,48 @@ const postUser = async (req = request, res = response) => {
         usuario.pass = hashSync( pass, salt );
 
         await usuario.save();
+
+        res.status(201).json({
+            usuario
+        });
         
+    } catch (error) {
+        if(error.errors) {
+            const errores = arregloErroresSave( error );
+            res.status(400).json( {errores} ); 
+        }
+        errorPeticion( res );
+    }
+};
+
+const putUsuario = async (req = request, res = response) => {
+    try {
+        const { nombre, pass, correo } = req.body;
+        const usuarioAuth = req.usuarioAuth;
+
+        const usuario = await Usuario.findByIdAndUpdate(usuarioAuth._id, {
+            nombre,
+            pass,
+            correo
+        }, {new: true});
+
+        res.status(200).json({tokenRenovado: req.tokenRenovado, usuario})
+    } catch (error) {
+        errorPeticion( res );
+    }
+};
+
+const deshabilitar = async (req = request, res = response) => {
+    try {
+        const usuarioAuth = req.usuarioAuth;
+
+        const usuarioDeshabilitado = await Usuario.findByIdAndUpdate(usuarioAuth._id, 
+            {estado: true}, 
+            {new: true});
+        
+        res.status(200).json({
+            usuarioDeshabilitado
+        });
     } catch (error) {
         errorPeticion( res );
     }
@@ -73,5 +116,7 @@ module.exports = {
     getAll,
     getById,
     getByName,
-    postUser
+    postUsuario,
+    putUsuario,
+    deshabilitar
 };

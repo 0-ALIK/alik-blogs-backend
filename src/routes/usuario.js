@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getAll, getById, getByName, postUser } = require('../controllers/usuario');
-const { mostrarErrores } = require('../middlewares');
+const { getAll, getById, getByName, postUsuario, putUsuario, deshabilitar } = require('../controllers/usuario');
+const { mostrarErrores, validarJWTMiddleware } = require('../middlewares');
 const { noExisteUsuarioByCorreo, existeUsuarioById, nameRegExp, passRegExp } = require('../helpers/data-base-helpers');
 
 const router = Router();
@@ -15,7 +15,8 @@ router.get( '/nombre/:nombre', [
 
 router.get( '/:userid', [
     check('userid', 'el id debe ser un id valido de MongoDB').isMongoId(),
-    check('userid').custom( existeUsuarioById )
+    check('userid').custom( existeUsuarioById ),
+    mostrarErrores
 ], getById );
 
 router.post( '/', [
@@ -23,21 +24,23 @@ router.post( '/', [
     check('nombre', 'el nombre no cumple el formato valido').matches( nameRegExp ),
     check('pass', 'la contraseña es obligatoria').notEmpty(),
     check('pass', 'la contraseña no tiene un formato seguro').matches( passRegExp ),
+    check('correo', 'el correo es obligatorio').notEmpty(),
     check('correo', 'el correo no es valido').isEmail(),
     check('correo').custom( noExisteUsuarioByCorreo ),
     mostrarErrores
-], postUser );
+], postUsuario );
 
-router.put('/', (req, resp) => {
-    resp.json({
-        msg: ''
-    });
-});
+router.put('/', [
+    validarJWTMiddleware,
+    check('nombre', 'el nombre no cumple el formato valido').optional().matches( nameRegExp ),
+    check('pass', 'la contraseña no tiene un formato seguro').optional().matches( passRegExp ),
+    check('correo', 'el correo no es valido').optional().isEmail(),
+    check('correo').optional().custom( noExisteUsuarioByCorreo ),
+    mostrarErrores
+], putUsuario );
 
-router.delete('/', (req, resp) => {
-    resp.json({
-        msg: ''
-    });
-});
+router.delete( '/', [
+    validarJWTMiddleware
+], deshabilitar );
 
 module.exports = router; 

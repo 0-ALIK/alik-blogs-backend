@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const connection = require('../config/connection');
 const { usuario, blog, like, seguidor, comentario, auth } = require('../routes');
-const { Usuario } = require('../models');
 
 class Server {
 
@@ -19,34 +18,23 @@ class Server {
         }
 
         this.connection(); 
-        this.middlewares(); 
-        this.test();
+        this.middlewares();
+        this.rutas();
+    }
+
+    /**
+     * Realiza la coneccion a la base de datos
+     */
+    async connection() {
+        await connection(); 
     }
 
     /**
      * Define los middlewares generales de la API
      */
     middlewares() {
-        this.app.use( cors );
+        this.app.use( cors() );
         this.app.use( express.json() );
-    }
-
-    async test() {
-
-        try {
-            const usuario = new Usuario({
-                correo: 'correoXcorreo.com',
-                nombre: 'pepe a', 
-                pass: '1234',
-            });
-    
-            await usuario.save()        
-        } catch (error) {
-            const validationErrors = Object.values(error.errors).map((error) => error.message);
-                console.log(validationErrors);
-        }
-    
-        
     }
 
     /**
@@ -59,13 +47,6 @@ class Server {
         this.app.use( this.paths.seguidor, seguidor ); 
         this.app.use( this.paths.comentario, comentario ); 
         this.app.use( this.paths.auth, auth ); 
-    }
-
-    /**
-     * Realiza la coneccion a la base de datos
-     */
-    async connection() {
-        await connection(); 
     }
 
     /**

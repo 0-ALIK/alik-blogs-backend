@@ -1,6 +1,6 @@
-const errorPeticion = res => {
-    req.status(500).json({
-        msg: 'algo ha salido mal al realizar esta petición, lo siento'    
+const errorPeticion = (res) => {
+    res.status(500).json({
+        msg: 'algo ha salido mal al realizar esta petición, lo siento',
     });
 }
 
