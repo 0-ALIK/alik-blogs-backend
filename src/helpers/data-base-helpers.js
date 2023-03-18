@@ -1,4 +1,4 @@
-const { Usuario } = require('../models');
+const { Usuario, Blog } = require('../models');
 
 const nameRegExp = /^[a-zA-Z0-9_]+$/; 
 
@@ -8,8 +8,20 @@ const passRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()_+\-=\[\]{};':
 
 const noExisteUsuarioById = async (_id) => {
     const usuario = await Usuario.findById( _id );
-    if(!usuario) {
+    if(!usuario || !usuario.estado) {
         throw new Error('no existe un usuario con el id: '+_id);
+    }
+};
+
+const noExisteBlogById = async (_id) => {
+    const blog = await Blog.findById( _id ).populate({
+        path: 'usuario',
+        match: {estado: true},
+        select: '-pass -__v',
+        options: { strict: false }
+    });
+    if(!blog || !blog.publicado) {
+        throw new Error('no existe un blog con el id: '+_id);
     }
 };
 
@@ -23,6 +35,7 @@ const existeUsuarioByCorreo = async (correo) => {
 module.exports = {
     existeUsuarioByCorreo,
     noExisteUsuarioById,
+    noExisteBlogById,
     nameRegExp,
     correoRegExp,
     passRegExp

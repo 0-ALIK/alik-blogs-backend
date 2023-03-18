@@ -17,10 +17,15 @@ const blogSchema = new Schema({
     },
     portada: {
         type: String
-    },  
+    },
+    publicado: {
+        type: Boolean,
+        default: false,
+    },
     usuario: {
         type: Schema.Types.ObjectId,
-        ref: 'usuario'
+        ref: 'usuario',
+        required: [true, 'el id del usuario es obligatorio']
     }
 });
 
