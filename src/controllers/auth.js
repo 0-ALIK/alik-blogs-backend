@@ -1,10 +1,9 @@
 const { compareSync } = require('bcrypt');
-const { request, response } = require('express');
 const { Usuario } = require('../models');
 const { errorPeticion } = require('../helpers/functions-helpers');
 const { generarJWT } = require('../helpers/jwt-helpers');
 
-const login = async (req = request, res = response) => {
+const login = async (req, res  ) => {
     const { correo, pass } = req.body;
 
     try {
@@ -12,7 +11,7 @@ const login = async (req = request, res = response) => {
 
         const isPassCorrect = compareSync( pass, usuario.pass || '' );
 
-        if(!usuario && isPassCorrect) {
+        if(!usuario || !isPassCorrect) {
             return res.status(400).json({msg: 'el correo / contraseña no son validos'});
         }
 
@@ -28,11 +27,11 @@ const login = async (req = request, res = response) => {
         });
 
     } catch (error) {
-        errorPeticion( req );
+        errorPeticion( res, error );
     }
 };
 
-const verificarAuth = async (req = request, res = response) => {
+const verificarAuth = async (req, res  ) => {
     const tokenRenovado = req.tokenRenovado
 
     res.status(200).json({

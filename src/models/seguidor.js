@@ -8,11 +8,13 @@ const seguidorSchema = new Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'usuario',
+        required: [true, 'el usuario a seguir es obligatorio'],
         validate: [notAutoFollow, 'un usuario no se puede seguir a si mismo']
     },
     seguidor: {
         type: Schema.Types.ObjectId,
-        ref: 'usuario'
+        ref: 'usuario',
+        required: [true, 'el usuario seguidor obligatorio']
     }
 });
 

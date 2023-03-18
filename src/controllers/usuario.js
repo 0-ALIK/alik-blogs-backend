@@ -1,42 +1,38 @@
-const { request, response } = require('express');
 const { errorPeticion } = require('../helpers/functions-helpers');
 const { Usuario } = require('../models');
 const { genSaltSync, hashSync } = require('bcrypt')
 
-const getAll = async (req = request, res = response) => {
+const getAll = async (req, res  ) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
     
-        const [cantidad, usuarios] = await Promise.all([
-            Usuario.countDocuments( {estado: true} ),
-            Usuario.find( {estado: true} )
-                .limit( Number(limit) )
-                .skip( Number(skip) )
-        ]);
+        const usuarios = await Usuario.find( {estado: true} )
+            .limit( Number(limit) )
+            .skip( Number(skip) );
     
         res.status(200).json({
-            cantidad,
+            cantidad: usuarios.length,
             usuarios
         });
 
     } catch (error) {
-        errorPeticion( res );
+        errorPeticion( res, error );
     }
 };
 
-const getById = async (req = request, res = response) => {
+const getById = async (req, res  ) => {
     try {
         const { userid } = req.params;
     
         const usuario = await Usuario.findById( userid );
 
-        res.status(200).json( {usuario} );
+        res.status(200).json( usuario );
     } catch (error) {
-        errorPeticion( res );
+        errorPeticion( res, error );
     }
 };
 
-const getByName = async (req = request, res = response) => {
+const getByName = async (req, res  ) => {
     try {
         const { nombre } = req.params;
         const regex = new RegExp(nombre, 'i');
@@ -45,11 +41,11 @@ const getByName = async (req = request, res = response) => {
     
         res.status(200).json( {usuarios} );
     } catch (error) {
-        errorPeticion( res );
+        errorPeticion( res, error );
     }
 };
 
-const postUsuario = async (req = request, res = response) => {
+const postUsuario = async (req, res  ) => {
     try {
         const { nombre, pass, correo } = req.body;
 
@@ -69,11 +65,11 @@ const postUsuario = async (req = request, res = response) => {
         });
         
     } catch (error) {
-        errorPeticion( res );
+        errorPeticion( res, error );
     }
 };
 
-const putUsuario = async (req = request, res = response) => {
+const putUsuario = async (req, res  ) => {
     try {
         const { nombre, about } = req.body;
         const usuarioAuth = req.usuarioAuth;
@@ -85,11 +81,11 @@ const putUsuario = async (req = request, res = response) => {
 
         res.status(200).json({tokenRenovado: req.tokenRenovado, usuario})
     } catch (error) {
-        errorPeticion( res );
+        errorPeticion( res, error );
     }
 };
 
-const deshabilitar = async (req = request, res = response) => {
+const deshabilitar = async (req, res  ) => {
     try {
         const usuarioAuth = req.usuarioAuth;
  
@@ -104,7 +100,7 @@ const deshabilitar = async (req = request, res = response) => {
             usuarioDeshabilitado
         });
     } catch (error) {
-        errorPeticion( res );
+        errorPeticion( res, error );
     }
 };
 

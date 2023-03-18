@@ -1,8 +1,7 @@
-const {response, request} = require('express');
 const { validarJWT } = require('../helpers/jwt-helpers');
 const { validationResult } = require('express-validator');
 
-const validarJWTMiddleware = async (req = request, res = response, next) => {
+const validarJWTMiddleware = async ( req, res, next ) => {
     const token = req.header('x-token');
 
     if(!token) {
@@ -28,7 +27,7 @@ const validarJWTMiddleware = async (req = request, res = response, next) => {
     next();
 }
 
-const mostrarErrores = (req, res, next) => {
+const mostrarErrores = ( req, res, next ) => {
     const errores = validationResult(req);
     if(!errores.isEmpty()) {
         return res.status(400).json(errores);
