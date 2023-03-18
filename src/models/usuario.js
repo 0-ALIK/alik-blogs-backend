@@ -11,7 +11,6 @@ const usuarioSchema = new Schema({
     pass: {
         type: String,
         required: [true, 'la contraseña es obligatoria'],
-        maxLength: [32, 'la contraseña no puede superar los 32 caracteres'],
         minLength: [8, 'la contraseña no puede tener menos de 8 caracteres'],
         match: [/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()_+\-=\[\]{};':"\\|,.<>\/?])/, 'La contraseña no tiene un formato seguro']
     },
@@ -22,6 +21,11 @@ const usuarioSchema = new Schema({
         maxLength: [20, 'el nombre no puede superar los 20 caracteres'],
         minLength: [2, 'el nombre no puede tener menos de 2 caracteres'],
         match: [/^[a-zA-Z0-9_]+$/, 'el nombre de usuario no cumple el formato valido']
+    },
+    about: {
+        type: String,
+        minLength: [2, 'el contenido no puede tener menos de 2 caracteres'],
+        maxLength: [200, 'el contenido no puede superar los 200 caracteres']
     },
     img: {
         type: String
@@ -35,5 +39,10 @@ const usuarioSchema = new Schema({
         default: true
     }
 });
+
+usuarioSchema.methods.toJSON = function() {
+    const {__v, pass, ...resto} = this.toObject();
+    return resto;
+}
 
 module.exports = model('usuario', usuarioSchema);

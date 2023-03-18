@@ -18,4 +18,9 @@ const seguidorSchema = new Schema({
 
 seguidorSchema.index({usuario: 1, seguidor: 1}, {unique: true});
 
+seguidorSchema.methods.toJSON = function() {
+    const {__v, ...resto} = this.toObject();
+    return resto;
+};
+
 module.exports = model('seguidor', seguidorSchema);

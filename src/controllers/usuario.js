@@ -1,13 +1,11 @@
 const { request, response } = require('express');
-const { errorPeticion, arregloErroresSave } = require('../helpers/functions-helpers');
+const { errorPeticion } = require('../helpers/functions-helpers');
 const { Usuario } = require('../models');
 const { genSaltSync, hashSync } = require('bcrypt')
 
 const getAll = async (req = request, res = response) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
-
-        console.log(Usuario);
     
         const [cantidad, usuarios] = await Promise.all([
             Usuario.countDocuments( {estado: true} ),
@@ -71,23 +69,18 @@ const postUsuario = async (req = request, res = response) => {
         });
         
     } catch (error) {
-        if(error.errors) {
-            const errores = arregloErroresSave( error );
-            res.status(400).json( {errores} ); 
-        }
         errorPeticion( res );
     }
 };
 
 const putUsuario = async (req = request, res = response) => {
     try {
-        const { nombre, pass, correo } = req.body;
+        const { nombre, about } = req.body;
         const usuarioAuth = req.usuarioAuth;
 
         const usuario = await Usuario.findByIdAndUpdate(usuarioAuth._id, {
             nombre,
-            pass,
-            correo
+            about
         }, {new: true});
 
         res.status(200).json({tokenRenovado: req.tokenRenovado, usuario})
@@ -99,12 +92,15 @@ const putUsuario = async (req = request, res = response) => {
 const deshabilitar = async (req = request, res = response) => {
     try {
         const usuarioAuth = req.usuarioAuth;
-
-        const usuarioDeshabilitado = await Usuario.findByIdAndUpdate(usuarioAuth._id, 
-            {estado: true}, 
-            {new: true});
+ 
+        const usuarioDeshabilitado = await Usuario.findByIdAndUpdate(
+            usuarioAuth._id, 
+            {estado: false}, 
+            {new: true}
+        );
         
         res.status(200).json({
+            tokenRenovado: req.tokenRenovado,
             usuarioDeshabilitado
         });
     } catch (error) {

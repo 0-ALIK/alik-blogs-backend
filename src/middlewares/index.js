@@ -5,6 +5,12 @@ const { validationResult } = require('express-validator');
 const validarJWTMiddleware = async (req = request, res = response, next) => {
     const token = req.header('x-token');
 
+    if(!token) {
+        return res.status(401).json({
+            msg: 'no se envio en token en la petición'
+        });
+    }
+
     const { usuario, msg, tokenRenovado } = await validarJWT( token );
 
     if(!usuario) {

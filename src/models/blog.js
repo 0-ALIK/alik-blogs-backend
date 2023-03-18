@@ -24,4 +24,9 @@ const blogSchema = new Schema({
     }
 });
 
+blogSchema.methods.toJSON = function() {
+    const {__v, ...resto} = this.toObject();
+    return resto;
+};
+
 module.exports = model('blog', blogSchema);

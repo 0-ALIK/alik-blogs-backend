@@ -17,4 +17,9 @@ const likeSchema = new Schema({
 
 likeSchema.index({usuario: 1, blog: 1}, {unique: true});
 
+likeSchema.methods.toJSON = function() {
+    const {__v, ...resto} = this.toObject();
+    return resto;
+};
+
 module.exports = model('like', likeSchema);
