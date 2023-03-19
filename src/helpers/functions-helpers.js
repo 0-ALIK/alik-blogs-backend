@@ -8,6 +8,7 @@ const errorPeticion = (res, error) => {
     } else {
         res.status(500).json({
             msg: 'algo ha salido mal al realizar esta petición, lo siento',
+            error
         });
     }
 }

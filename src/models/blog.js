@@ -9,7 +9,8 @@ const blogSchema = new Schema({
     },
     contenido: {
         type: String,
-        required: [true, 'el contenido es obligatorio']
+        required: [true, 'el contenido es obligatorio'],
+        default: 'Hola, este es mi nuevo blog :D'
     },
     fecha: {
         type: Date,

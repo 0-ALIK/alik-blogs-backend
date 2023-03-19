@@ -17,7 +17,9 @@ const noExisteUsuarioById = async (_id) => {
 };
 
 const noExisteBlogById = async (_id) => {
-    const blog = await Blog.findById( _id ).populate({
+    const blog = await Blog.findById( _id )
+    .select({usuario: 0})
+    .populate({
         path: 'usuario',
         match: {estado: true},
         select: '-pass -__v',
