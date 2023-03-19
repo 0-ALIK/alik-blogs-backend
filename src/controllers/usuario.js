@@ -1,6 +1,7 @@
 const { errorPeticion } = require('../helpers/functions-helpers');
+const { subirImagen, borrarImagen } = require('../helpers/cloudinary-helpers');
 const { Usuario } = require('../models');
-const { genSaltSync, hashSync } = require('bcrypt')
+const { genSaltSync, hashSync } = require('bcrypt');
 
 const getAll = async (req, res  ) => {
     try {
@@ -60,9 +61,7 @@ const postUsuario = async (req, res  ) => {
 
         await usuario.save();
 
-        res.status(201).json({
-            usuario
-        });
+        res.status(201).json(usuario);
         
     } catch (error) {
         errorPeticion( res, error );
@@ -72,11 +71,21 @@ const postUsuario = async (req, res  ) => {
 const putUsuario = async (req, res  ) => {
     try {
         const { nombre, about } = req.body;
+        let { img } = req.body;
         const usuarioAuth = req.usuarioAuth;
+
+        if( img ) {
+            const { path } = await subirImagen( img.tempFilePath );
+            img = path;
+            if (usuarioAuth.img) {
+                borrarImagen( usuarioAuth.img ); 
+            }
+        }
 
         const usuario = await Usuario.findByIdAndUpdate(usuarioAuth._id, {
             nombre,
-            about
+            about,
+            img
         }, {new: true});
 
         res.status(200).json({tokenRenovado: req.tokenRenovado, usuario})

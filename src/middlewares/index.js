@@ -36,7 +36,18 @@ const mostrarErrores = ( req, res, next ) => {
     next();
 }
 
+const moverArchivosAlBody = (req, res, next) => {
+    if (req.files) {
+        for (const key in req.files) {
+            req.body[key] = req.files[key];
+        }
+    }
+
+    next();
+}
+
 module.exports = {
     validarJWTMiddleware,
-    mostrarErrores
+    mostrarErrores,
+    moverArchivosAlBody
 }

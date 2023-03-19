@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const { getAll, getById, getByName, postUsuario, putUsuario, deshabilitar } = require('../controllers/usuario');
-const { mostrarErrores, validarJWTMiddleware } = require('../middlewares');
-const { existeUsuarioByCorreo, noExisteUsuarioById, nameRegExp, passRegExp } = require('../helpers/data-base-helpers');
+const { mostrarErrores, validarJWTMiddleware, moverArchivosAlBody } = require('../middlewares');
+const { existeUsuarioByCorreo, noExisteUsuarioById, nameRegExp, passRegExp, validarExtension } = require('../helpers/data-base-helpers');
 
 const router = Router();
 
@@ -33,6 +33,9 @@ router.post( '/', [
 
 router.put('/', [
     validarJWTMiddleware,
+    moverArchivosAlBody,
+    check('img', 'no es una imagen valida').optional().isObject(),
+    check('img').optional().custom( validarExtension ),
     check('nombre', 'el nombre no cumple el formato valido').optional().matches( nameRegExp ),
     check('about', 'la descripción no puede superar los 200 caracteres').optional().isLength( {min: 2, max: 200} ),
     mostrarErrores

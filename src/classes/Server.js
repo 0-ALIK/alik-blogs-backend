@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const connection = require('../config/connection');
+const fileUpload = require('express-fileupload');
 const { usuario, blog, like, seguidor, comentario, auth } = require('../routes');
 
 class Server {
@@ -35,6 +36,10 @@ class Server {
     middlewares() {
         this.app.use( cors() );
         this.app.use( express.json() );
+        this.app.use( fileUpload({
+            useTempFiles : true,
+            tempFileDir : '/tmp/'
+        }) );
     }
 
     /**
