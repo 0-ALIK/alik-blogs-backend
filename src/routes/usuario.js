@@ -34,6 +34,7 @@ router.post( '/', [
     mostrarErrores
 ], postUsuario );
 
+// Requiere autenticación
 router.put('/', [
     validarJWTMiddleware,
     moverArchivosAlBody,
@@ -45,6 +46,7 @@ router.put('/', [
     mostrarErrores
 ], putUsuario );
 
+// Requiere autenticación
 router.delete( '/', [
     validarJWTMiddleware
 ], deshabilitar );

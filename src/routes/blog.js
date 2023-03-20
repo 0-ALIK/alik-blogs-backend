@@ -24,10 +24,12 @@ router.get( '/titulo/:titulo', [
     mostrarErrores
 ], getByTitle );
 
+// Requiere autenticación
 router.get( '/no/publicados', [
     validarJWTMiddleware
 ], getAllNoPub );
 
+// Requiere autenticación
 router.post( '/', [ 
     validarJWTMiddleware,
     moverArchivosAlBody,
@@ -37,6 +39,7 @@ router.post( '/', [
     mostrarErrores
 ], postBlog );
 
+// Requiere autenticación
 router.put( '/:blogid', [
     validarJWTMiddleware,
     moverArchivosAlBody,
@@ -51,6 +54,7 @@ router.put( '/:blogid', [
     mostrarErrores
 ], putBlog );
 
+// Requiere autenticación
 router.delete( '/:blogid', [
     validarJWTMiddleware,
     check('blogid', 'no es un id valido de mongo').isMongoId(),

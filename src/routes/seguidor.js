@@ -20,12 +20,14 @@ router.get( '/amigos/:userid', [
     mostrarErrores
 ], getAmigos);
 
+// Requiere autenticación
 router.post( '/seguir/:userid', [
     validarJWTMiddleware,
     check('userid', 'el id debe ser un id de mongo').notEmpty().isMongoId(),
     mostrarErrores
 ], seguirUsuario );
 
+// Requiere autenticación
 router.delete( '/unfollow/:userid', [
     validarJWTMiddleware,
     check('userid', 'el id debe ser un id de mongo').notEmpty().isMongoId(),

@@ -11,6 +11,7 @@ router.post( '/login', [
     mostrarErrores
 ], login );
 
+// Requiere autenticación
 router.get( '/', [
     validarJWTMiddleware
 ], verificarAuth );

@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+/**
+ * Esta función establece la conexión con la base de datos de forma asíncrona
+ */
 const connection = async () => {
 
     try {

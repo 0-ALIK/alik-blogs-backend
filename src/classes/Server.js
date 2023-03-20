@@ -4,6 +4,9 @@ const connection = require('../config/connection');
 const fileUpload = require('express-fileupload');
 const { usuario, blog, like, seguidor, comentario, auth } = require('../routes');
 
+/**
+ * Esta clase define toda la configuración del servidor y API REST, como los Middlewares, las rutas, Sockets y conexiones con bases de datos
+ */
 class Server {
 
     constructor() {

@@ -4,7 +4,7 @@ cloudinary.config( CLOUDINARY_URL );
 
 /**
  * Subir una imagen a Cloudinary
- * @param {*} tempFile Es el directorio temporal dende se guarda la imagen
+ * @param {*} tempFile Es el directorio temporal dende se guarda la imagen enviada en el body de una petición HTTP
  * @returns Un Objeto {} que puede contener el path o el msg de error en caso de que salga mal
  */
 const subirImagen = async tempFile => {
@@ -17,7 +17,7 @@ const subirImagen = async tempFile => {
 }
 
 /**
- * Borrar una imagen de Cloudinary
+ * Borrar una imagen de Cloudinary, esta función se encarga de obtener el id del src de la imagen para proceder con su eliminación
  * @param {*} src Es el path src de la imagen en cloudinary
  * @returns retorna un mensaje en caso de que salga mal
  */
