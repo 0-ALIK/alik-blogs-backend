@@ -1,4 +1,4 @@
-const { errorPeticion } = require('../helpers/functions-helpers');
+const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 const { subirImagen, borrarImagen } = require('../helpers/cloudinary-helpers');
 const { Usuario } = require('../models');
 const { genSaltSync, hashSync } = require('bcrypt');
@@ -27,7 +27,10 @@ const getById = async (req, res  ) => {
     
         const usuario = await Usuario.findById( userid );
 
-        res.status(200).json( usuario );
+        if(!usuario || !usuario.estado) 
+            return generarError(404, 'no existe un usuario con el id '+userid, res);
+
+        res.status(200).json({ usuario });
     } catch (error) {
         errorPeticion( res, error );
     }
@@ -97,8 +100,9 @@ const putUsuario = async (req, res  ) => {
 const deshabilitar = async (req, res  ) => {
     try {
         const usuarioAuth = req.usuarioAuth;
- 
-        const usuarioDeshabilitado = await Usuario.findByIdAndUpdate(
+        
+        // Este es el usuario deshabilitado
+        const usuario = await Usuario.findByIdAndUpdate(
             usuarioAuth._id, 
             {estado: false}, 
             {new: true}
@@ -106,7 +110,7 @@ const deshabilitar = async (req, res  ) => {
         
         res.status(200).json({
             tokenRenovado: req.tokenRenovado,
-            usuarioDeshabilitado
+            usuario
         });
     } catch (error) {
         errorPeticion( res, error );

@@ -1,5 +1,5 @@
 const { request, response } = require('express');
-const { errorPeticion } = require('../helpers/functions-helpers');
+const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 const { subirImagen, borrarImagen } = require('../helpers/cloudinary-helpers');
 const { Blog } = require('../models');
 
@@ -17,7 +17,8 @@ const getAll = async (req = request, res = response) => {
         const blogs = await Blog.find( {publicado: true} )
             .limit( Number(limit) )
             .skip( Number(skip) )
-            .populate( population );
+            .populate( population )
+            .sort({fecha: 'desc'});
         
         res.status(200).json({
             cantidad: blogs.length,
@@ -33,6 +34,9 @@ const getById = async (req = request, res = response) => {
         const { blogid } = req.params;
 
         const blog = await Blog.findById( blogid ).populate( population );
+
+        if(!blog || !blog.publicado)
+            return generarError(404, 'no se encontro un blog con el id: '+blogid, res);
 
         res.status(200).json(blog);
     } catch (error) {
@@ -113,9 +117,8 @@ const postBlog = async (req = request, res = response) => {
 
 const putBlog = async (req = request, res = response) => {
     try {
-        /* const { blogid } = req.params;
+        const { blogid } = req.params;
         const { titulo, contenido, publicado } = req.body;
-        const usuarioAuth = req.usuarioAuth;
         let { portada } = req.body;
 
         if( portada ) {
@@ -127,7 +130,16 @@ const putBlog = async (req = request, res = response) => {
             }
         }
 
-        const blog = await Blog.findByIdAndUpdate({}); */
+        const blog = await Blog.findByIdAndUpdate( blogid, {
+            titulo,
+            contenido,
+            publicado,
+            portada
+        });
+
+        res.status(201).json({
+            blog
+        });
 
     } catch (error) {
         errorPeticion( res, error );
@@ -135,7 +147,17 @@ const putBlog = async (req = request, res = response) => {
 };
 
 const deleteBlog = async (req = request, res = response) => {
+    try {
+        const { blogid } = req.params;
 
+        const blog = await Blog.findByIdAndDelete( blogid );
+
+        res.status(204).json({
+            blog
+        });
+    } catch (error) {
+        errorPeticion( res, error );
+    }
 };
 
 module.exports = {
