@@ -5,7 +5,7 @@ const blogSchema = new Schema({
         type: String,
         required: [true, 'el titulo es obligatorio'],
         minLength: [2, 'el titulo no puede tener menos de 2 caracteres'],
-        maxLength: [30, 'el titulo no puede superar los 30 caracteres']
+        maxLength: [50, 'el titulo no puede superar los 30 caracteres']
     },
     contenido: {
         type: String,

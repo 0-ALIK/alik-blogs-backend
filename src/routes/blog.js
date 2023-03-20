@@ -24,14 +24,14 @@ router.get( '/titulo/:titulo', [
     mostrarErrores
 ], getByTitle );
 
-router.get( '/all/nopub', [
+router.get( '/no/publicados', [
     validarJWTMiddleware
 ], getAllNoPub );
 
 router.post( '/', [ 
     validarJWTMiddleware,
     moverArchivosAlBody,
-    check('titulo', 'el titulo debe tener mínimo 2 caracteres y máximo 30').notEmpty().isLength({min: 2, max: 30}),
+    check('titulo', 'el titulo debe tener mínimo 2 caracteres y máximo 30').notEmpty().isLength({min: 2, max: 50}),
     check('portada', 'no es una imagen valida').optional().isObject(),
     check('portada').optional().custom( validarExtension ),
     mostrarErrores
@@ -43,10 +43,10 @@ router.put( '/:blogid', [
     check('blogid', 'no es un id valido de mongo').isMongoId(),
     check('blogid').custom( noExisteBlogById( false ) ),
     mostrarErrores,
-    blogPerteneceUsuario,
+    blogPerteneceUsuario(),
     check('titulo', 'el titulo debe tener mínimo 2 caracteres y máximo 30')
         .optional()
-        .isLength({min: 2, max: 30}),
+        .isLength({min: 2, max: 50}),
     check('portada').optional().custom( validarExtension ),
     mostrarErrores
 ], putBlog );

@@ -6,7 +6,7 @@ const { Blog } = require('../models');
 const population = {
     path: 'usuario',
     match: { estado: true },
-    select: '-pass -__v',
+    select: '-pass -__v -estado -fecha -correo',
     options: { strict: false }
 };
 
@@ -18,6 +18,7 @@ const getAll = async (req = request, res = response) => {
             .limit( Number(limit) )
             .skip( Number(skip) )
             .populate( population )
+            .select({contenido: 0, publicado: 0})
             .sort({fecha: 'desc'});
         
         res.status(200).json({
@@ -48,7 +49,9 @@ const getAllByUserId = async (req = request, res = response) => {
     try {
         const { userid } = req.params;
 
-        const blogs = await Blog.find({publicado: true, usuario: userid});
+        const blogs = await Blog.find({publicado: true, usuario: userid})
+            .select({usuario: 0})
+            .sort({fecha: 'desc'});
 
         res.status(200).json({
             cantidad: blogs.length,
@@ -66,7 +69,7 @@ const getByTitle = async (req = request, res = response) => {
 
         const blogs = await Blog.find({titulo: regex}).populate(population);
 
-        res.status(200).json(blogs);
+        res.status(200).json({blogs});
     } catch (error) {
         
     }
@@ -81,7 +84,10 @@ const getAllNoPub = async (req = request, res = response) => {
             usuario: usuarioAuth._id
         });
 
-        res.status(200).json(blogs);
+        res.status(200).json({
+            cantidad: blogs.length,
+            blogs
+        });
     } catch (error) {
         errorPeticion( res, error );
     }
@@ -135,7 +141,7 @@ const putBlog = async (req = request, res = response) => {
             contenido,
             publicado,
             portada
-        });
+        }, {new: true});
 
         res.status(201).json({
             blog
