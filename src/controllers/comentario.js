@@ -67,7 +67,7 @@ const deleteComentario = async (req = request, res = response) => {
         });
 
         if(!comentarioTest)
-            return generarError(401, 'este comentario no te pertenece o no pertenece a este blog', res);
+            return generarError(401, 'este comentario no te pertenece', res);
 
         const comentario = await Comentario.findByIdAndDelete( comentarioid );
 
