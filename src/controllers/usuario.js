@@ -107,9 +107,12 @@ const deshabilitar = async (req, res  ) => {
             {estado: false}, 
             {new: true}
         );
+
+        if (usuario.img) {
+            borrarImagen( usuario.img );
+        }
         
         res.status(200).json({
-            tokenRenovado: req.tokenRenovado,
             usuario
         });
     } catch (error) {

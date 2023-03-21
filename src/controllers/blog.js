@@ -1,7 +1,6 @@
-const { request, response } = require('express');
 const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 const { subirImagen, borrarImagen } = require('../helpers/cloudinary-helpers');
-const { Blog } = require('../models');
+const { Blog, Comentario, Like } = require('../models');
 
 const population = {
     path: 'usuario',
@@ -10,7 +9,7 @@ const population = {
     options: { strict: false }
 };
 
-const getAll = async (req = request, res = response) => {
+const getAll = async (req , res ) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
 
@@ -30,7 +29,7 @@ const getAll = async (req = request, res = response) => {
     }
 };
 
-const getById = async (req = request, res = response) => {
+const getById = async (req , res ) => {
     try {
         const { blogid } = req.params;
 
@@ -45,7 +44,7 @@ const getById = async (req = request, res = response) => {
     }
 };
 
-const getAllByUserId = async (req = request, res = response) => {
+const getAllByUserId = async (req , res ) => {
     try {
         const { userid } = req.params;
 
@@ -62,7 +61,7 @@ const getAllByUserId = async (req = request, res = response) => {
     }
 };
 
-const getByTitle = async (req = request, res = response) => {
+const getByTitle = async (req , res ) => {
     try {
         const { titulo } = req.params;
         const regex = new RegExp(titulo, 'i');
@@ -75,7 +74,7 @@ const getByTitle = async (req = request, res = response) => {
     }
 };
 
-const getAllNoPub = async (req = request, res = response) => {
+const getAllNoPub = async (req , res ) => {
     try {
         const usuarioAuth = req.usuarioAuth;
 
@@ -85,6 +84,7 @@ const getAllNoPub = async (req = request, res = response) => {
         });
 
         res.status(200).json({
+            tokenRenovado: req.tokenRenovado,
             cantidad: blogs.length,
             blogs
         });
@@ -93,7 +93,7 @@ const getAllNoPub = async (req = request, res = response) => {
     }
 };
 
-const postBlog = async (req = request, res = response) => {
+const postBlog = async (req , res ) => {
     try {
         const { titulo } = req.body;
         const usuarioAuth = req.usuarioAuth;
@@ -121,7 +121,7 @@ const postBlog = async (req = request, res = response) => {
     }
 };
 
-const putBlog = async (req = request, res = response) => {
+const putBlog = async (req , res ) => {
     try {
         const { blogid } = req.params;
         const { titulo, contenido, publicado } = req.body;
@@ -144,6 +144,7 @@ const putBlog = async (req = request, res = response) => {
         }, {new: true});
 
         res.status(201).json({
+            tokenRenovado: req.tokenRenovado,
             blog
         });
 
@@ -152,13 +153,22 @@ const putBlog = async (req = request, res = response) => {
     }
 };
 
-const deleteBlog = async (req = request, res = response) => {
+const deleteBlog = async (req , res ) => {
     try {
-        const { blogid } = req.params;
+        const { blogid } = req.params
 
+        console.log('1')
+
+        await Comentario.deleteMany({blog: blogid});
+        await Like.deleteMany({blog: blogid});
         const blog = await Blog.findByIdAndDelete( blogid );
 
-        res.status(204).json({
+        if(blog.portada) {
+            borrarImagen( blog.portada );
+        }
+
+        res.status(200).json({
+            tokenRenovado: req.tokenRenovado,
             blog
         });
     } catch (error) {

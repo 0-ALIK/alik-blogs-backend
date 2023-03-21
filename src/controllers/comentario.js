@@ -1,4 +1,3 @@
-const { request, response } = require('express');
 const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 const { Comentario } = require('../models');
 
@@ -9,7 +8,7 @@ const population = {
     options: { strict: false }
 };
 
-const getAllById = async (req = request, res = response) => {
+const getAllById = async (req , res ) => {
     try {
         const { blogid } = req.params;
 
@@ -23,7 +22,7 @@ const getAllById = async (req = request, res = response) => {
     }
 };
 
-const getCountById = async (req = request, res = response) => {
+const getCountById = async (req , res ) => {
     try {
         const { blogid } = req.params;
 
@@ -36,7 +35,7 @@ const getCountById = async (req = request, res = response) => {
     }
 };
 
-const postComentario = async (req = request, res = response) => {
+const postComentario = async (req , res ) => {
     try {
         const userid = req.usuarioAuth._id;
         const { blogid } = req.params;
@@ -50,13 +49,16 @@ const postComentario = async (req = request, res = response) => {
 
         await comentario.save();
 
-        res.status(201).json({comentario});
+        res.status(201).json({
+            tokenRenovado: req.tokenRenovado,
+            comentario
+        });
     } catch (error) {
         errorPeticion( res, error );
     }
 };
 
-const deleteComentario = async (req = request, res = response) => {
+const deleteComentario = async (req , res ) => {
     try {
         const { comentarioid } = req.params;
         const userid = req.usuarioAuth._id;
@@ -71,7 +73,8 @@ const deleteComentario = async (req = request, res = response) => {
 
         const comentario = await Comentario.findByIdAndDelete( comentarioid );
 
-        res.status(204).json({
+        res.status(200).json({
+            tokenRenovado: req.tokenRenovado,
             comentario
         });
     } catch (error) {

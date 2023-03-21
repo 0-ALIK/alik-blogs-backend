@@ -59,7 +59,7 @@ router.delete( '/:blogid', [
     validarJWTMiddleware,
     check('blogid', 'no es un id valido de mongo').isMongoId(),
     mostrarErrores,
-    blogPerteneceUsuario
+    blogPerteneceUsuario()
 ], deleteBlog );
 
 module.exports = router; 
