@@ -1,4 +1,4 @@
-const { Usuario, Blog } = require('../models');
+const { Usuario, Blog, Comentario } = require('../models');
 
 const nameRegExp = /^[a-zA-Z0-9_]+$/; 
 
@@ -17,6 +17,19 @@ const noExisteUsuarioById = async (_id) => {
     const usuario = await Usuario.findById( _id );
     if(!usuario || !usuario.estado) {
         throw new Error('no existe un usuario con el id: '+_id);
+    }
+    return true;
+};
+
+/**
+ * Esta función se utiliza con el custom de express-validator, utilizar sólo cuando sea realmente nesesario para no hacer doble consulta a la base de datos
+ * @param {*} _id Es el id del comentario a validar su existencia
+ * @returns true, en caso de si existir
+ */
+const noExisteComentarioById = async (_id) => {
+    const comentario = await Comentario.findById( _id );
+    if(!comentario) {
+        throw new Error('no existe un comentario con el id: '+_id);
     }
     return true;
 };
@@ -89,6 +102,7 @@ module.exports = {
     noExisteBlogById,
     validarExtension,
     existeUsuarioByNombre,
+    noExisteComentarioById,
     nameRegExp,
     correoRegExp,
     passRegExp,

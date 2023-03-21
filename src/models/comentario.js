@@ -3,11 +3,13 @@ const { Schema, model } = require('mongoose');
 const comentarioSchema = new Schema({
     usuario: {
         type: Schema.Types.ObjectId,
-        ref: 'usuario'
+        ref: 'usuario',
+        required: [true, 'el usuario es obligatorio']
     },
     blog: {
         type: Schema.Types.ObjectId,
-        ref: 'blog'
+        ref: 'blog',
+        required: [true, 'el id de blog es obligatorio']
     },
     fecha: {
         type: Date,
@@ -20,8 +22,6 @@ const comentarioSchema = new Schema({
         maxLength: [150, 'el contenido no puede superar los 200 caracteres']
     }
 });
-
-comentarioSchema.index({usuario: 1, blog: 1}, {unique: true});
 
 comentarioSchema.methods.toJSON = function() {
     const {__v, ...resto} = this.toObject();
