@@ -4,6 +4,7 @@ const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 // /upload/subir
 const subir = async (req, res) => {
     try {
+        console.log('procesando petición de subir imagen.....')
         const { imagen } = req.body;
         const { path, msg } = await subirImagen( imagen.tempFilePath );
 
