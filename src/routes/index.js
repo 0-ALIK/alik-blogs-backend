@@ -4,6 +4,7 @@ const like = require('./like');
 const comentario = require('./comentario');
 const seguidor = require('./seguidor');
 const auth = require('./auth'); 
+const upload = require('./upload');
 
 module.exports = {
     usuario,
@@ -11,5 +12,6 @@ module.exports = {
     like,
     comentario,
     seguidor,
-    auth
+    auth,
+    upload
 };

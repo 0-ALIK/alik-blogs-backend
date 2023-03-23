@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const connection = require('../config/connection');
 const fileUpload = require('express-fileupload');
-const { usuario, blog, like, seguidor, comentario, auth } = require('../routes');
+const { usuario, blog, like, seguidor, comentario, auth, upload } = require('../routes');
 
 /**
  * Esta clase define toda la configuración del servidor y API REST, como los Middlewares, las rutas, Sockets y conexiones con bases de datos
@@ -18,7 +18,8 @@ class Server {
             like: '/like',
             comentario: '/comentario',
             seguidor: '/seguidor',
-            auth: '/auth'
+            auth: '/auth',
+            upload: '/upload'
         }
 
         this.connection(); 
@@ -55,6 +56,7 @@ class Server {
         this.app.use( this.paths.seguidor, seguidor ); 
         this.app.use( this.paths.comentario, comentario ); 
         this.app.use( this.paths.auth, auth ); 
+        this.app.use( this.paths.upload, upload );
     }
 
     /**
