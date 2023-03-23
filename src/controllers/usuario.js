@@ -6,13 +6,16 @@ const { genSaltSync, hashSync } = require('bcrypt');
 const getAll = async (req, res  ) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
-    
-        const usuarios = await Usuario.find( {estado: true} )
-            .limit( Number(limit) )
-            .skip( Number(skip) );
+
+        const [usuarios, cantidad] = await Promise.all([
+            Usuario.find( {estado: true} )
+                .limit( Number(limit) )
+                .skip( Number(skip) ),
+            Usuario.countDocuments({estado: true})
+        ]);
     
         res.status(200).json({
-            cantidad: usuarios.length,
+            cantidad,
             usuarios
         });
 

@@ -13,15 +13,19 @@ const getAll = async (req , res ) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
 
-        const blogs = await Blog.find( {publicado: true} )
-            .limit( Number(limit) )
-            .skip( Number(skip) )
-            .populate( population )
-            .select({contenido: 0, publicado: 0})
-            .sort({fecha: 'desc'});
+        const [blogs, cantidad] = await Promise.all([
+            Blog.find( {publicado: true} )
+                .limit( Number(limit) )
+                .skip( Number(skip) )
+                .populate( population )
+                .select({contenido: 0, publicado: 0})
+                .sort({fecha: 'desc'}),
+            Blog.countDocuments( {publicado: true} )
+                .populate( population )
+        ]);
         
         res.status(200).json({
-            cantidad: blogs.length,
+            cantidad,
             blogs
         });
     } catch (error) {
