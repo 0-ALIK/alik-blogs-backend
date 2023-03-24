@@ -42,7 +42,7 @@ const getById = async (req , res ) => {
         if(!blog || !blog.publicado)
             return generarError(404, 'no se encontro un blog con el id: '+blogid, res);
 
-        res.status(200).json(blog);
+        res.status(200).json({blog});
     } catch (error) {
         errorPeticion( res, error );
     }

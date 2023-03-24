@@ -6,7 +6,7 @@ const { validarExtension } = require('../helpers/data-base-helpers');
 const router = Router();
 
 router.post( '/subir', [
-    
+    validarJWTMiddleware,
     moverArchivosAlBody,
     check('imagen', 'no es una imagen valida').notEmpty().isObject(),
     check('imagen').custom( validarExtension ),
@@ -14,7 +14,7 @@ router.post( '/subir', [
 ], subir );
 
 router.delete( '/borrar', [
-    
+    validarJWTMiddleware,
     check('src', 'no es un url valido de cloudinary').notEmpty().isURL(),
     mostrarErrores
 ], borrar )

@@ -2,6 +2,7 @@ const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 const { subirImagen, borrarImagen } = require('../helpers/cloudinary-helpers');
 const { Usuario } = require('../models');
 const { genSaltSync, hashSync } = require('bcrypt');
+const { generarJWT } = require('../helpers/jwt-helpers');
 
 const getAll = async (req, res  ) => {
     try {
@@ -67,7 +68,12 @@ const postUsuario = async (req, res  ) => {
 
         await usuario.save();
 
-        res.status(201).json(usuario);
+        const token = await generarJWT( usuario._id );
+
+        res.status(201).json({
+            token,
+            usuario
+        });
         
     } catch (error) {
         errorPeticion( res, error );
