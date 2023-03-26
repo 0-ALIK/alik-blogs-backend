@@ -14,7 +14,8 @@ const getAllById = async (req , res ) => {
 
         const comentarios = await Comentario.find({blog: blogid})
             .populate( population )
-            .select({blog: 0});
+            .select({blog: 0})
+            .sort({fecha: 'asc'});
 
         res.status(200).json({
             comentarios,
