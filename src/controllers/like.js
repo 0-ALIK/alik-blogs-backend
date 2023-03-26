@@ -5,13 +5,13 @@ const { Like } = require('../models');
 const populationUsuarios = {
     path: 'usuario',
     match: { estado: true },
-    select: '-pass -__v -estado -fecha -correo -nombre',
+    select: '-pass -__v -estado -fecha -correo',
     options: { strict: false }
 };
 
 const populationBlogs = {
     path: 'blog',
-    match: { estado: true },
+    match: { publicado: true },
     select: '-__v -contenido -fecha -publicado',
     options: { strict: false }
 };
@@ -20,9 +20,11 @@ const getUsuariosLike = async (req = request, res = response) => {
     try {
         const { blogid } = req.params;
 
-        const usuarios = await Like.find({blog: blogid})
+        const likes = await Like.find({blog: blogid})
             .populate( populationUsuarios )
-            .select({blog: 0});
+            .select({blog: 0, _id: 0});
+
+        const usuarios = likes.map( like => like.usuario );
 
         res.status(200).json({
             cantidad: usuarios.length,
@@ -37,9 +39,11 @@ const getBlogsLike = async (req = request, res = response) => {
     try {
         const { userid } = req.params;
 
-        const blogs = await Like.find({usuario: userid})
+        const likes = await Like.find({usuario: userid})
             .populate( populationBlogs )
-            .select({usuario: 0});
+            .select({usuario: 0, _id: 0});
+
+        const blogs = likes.map( like => like.blog );
 
         res.status(200).json({
             cantidad: blogs.length,

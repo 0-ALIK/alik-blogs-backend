@@ -63,7 +63,7 @@ const blogPerteneceUsuario = (pertenece = true) => {
             return generarError(401, 'no tienes autorización para acceder a este blog', res);
 
         if(!pertenece && blog)
-            return generarError(401, 'no puedes realizar esta acción sobre un blog de tu propiedad', res);
+            return generarError(403, 'no puedes realizar esta acción sobre un blog de tu propiedad', res);
         
         next();
     };

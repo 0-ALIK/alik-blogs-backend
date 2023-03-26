@@ -16,22 +16,12 @@ const getAllById = async (req , res ) => {
             .populate( population )
             .select({blog: 0});
 
-        res.status(200).json({comentarios});
+        res.status(200).json({
+            comentarios,
+            cantidad: comentarios.length
+        });
     } catch (error) {
         errorPeticion( res, error );
-    }
-};
-
-const getCountById = async (req , res ) => {
-    try {
-        const { blogid } = req.params;
-
-        const cantidad = await Comentario.countDocuments({blog: blogid})
-            .populate( population );
-
-        res.status(200).json({cantidad});
-    } catch (error) {
-        errorPeticion( res, error );       
     }
 };
 
@@ -84,7 +74,6 @@ const deleteComentario = async (req , res ) => {
 
 module.exports = {
     getAllById,
-    getCountById,
     postComentario,
     deleteComentario
 };

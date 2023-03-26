@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getAllById, getCountById, postComentario, deleteComentario } = require('../controllers/comentario');
+const { getAllById, postComentario, deleteComentario } = require('../controllers/comentario');
 const { noExisteBlogById, noExisteComentarioById } = require('../helpers/data-base-helpers');
 const { mostrarErrores, validarJWTMiddleware } = require('../middlewares');
 
@@ -11,12 +11,6 @@ router.get( '/all/:blogid', [
     check('blogid').custom( noExisteBlogById() ),
     mostrarErrores
 ], getAllById );
-
-router.get( '/count/:blogid', [
-    check('blogid', 'el id debe ser un id valido de mongo').isMongoId(),
-    check('blogid').custom( noExisteBlogById() ),
-    mostrarErrores
-], getCountById );
 
 // Requiere autenticación
 router.post( '/:blogid', [

@@ -1,12 +1,14 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getAll, getById, getByName, postUsuario, putUsuario, deshabilitar } = require('../controllers/usuario');
+const { getAll, getById, getByName, postUsuario, putUsuario, deshabilitar, find } = require('../controllers/usuario');
 const { mostrarErrores, validarJWTMiddleware, moverArchivosAlBody } = require('../middlewares');
 const { existeUsuarioByCorreo, nameRegExp, passRegExp, validarExtension, existeUsuarioByNombre } = require('../helpers/data-base-helpers');
 
 const router = Router();
 
 router.get( '/all', getAll );
+
+router.get( '/find', find );
 
 router.get( '/nombre/:nombre', [
     check('nombre', 'el query de búsqueda es obligatorio').notEmpty(),

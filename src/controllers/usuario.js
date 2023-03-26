@@ -1,6 +1,6 @@
 const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 const { subirImagen, borrarImagen } = require('../helpers/cloudinary-helpers');
-const { Usuario } = require('../models');
+const { Usuario, Blog } = require('../models');
 const { genSaltSync, hashSync } = require('bcrypt');
 const { generarJWT } = require('../helpers/jwt-helpers');
 
@@ -20,6 +20,26 @@ const getAll = async (req, res  ) => {
             usuarios
         });
 
+    } catch (error) {
+        errorPeticion( res, error );
+    }
+};
+
+const find = async (req, res) => {
+    try {
+        const { nombre, correo } = req.query; 
+        const query = {};
+
+        if(nombre) 
+            query.nombre = nombre;
+            
+        if(correo) 
+            query.correo = correo;
+
+        const usuarios = await Usuario.find(query);
+        res.status(200).json({
+            usuarios
+        });
     } catch (error) {
         errorPeticion( res, error );
     }
@@ -120,6 +140,8 @@ const deshabilitar = async (req, res  ) => {
         if (usuario.img) {
             borrarImagen( usuario.img );
         }
+
+        await Blog.updateMany({usuario: usuarioAuth._id}, {publicado: false});
         
         res.status(200).json({
             usuario
@@ -131,6 +153,7 @@ const deshabilitar = async (req, res  ) => {
 
 module.exports = {
     getAll,
+    find,
     getById,
     getByName,
     postUsuario,

@@ -8,11 +8,7 @@ const likeSchema = new Schema({
     blog: {
         type: Schema.Types.ObjectId,
         ref: 'blog'
-    },
-    fecha: {
-        type: Date,
-        default: Date.now()
-    },
+    }
 });
 
 likeSchema.index({usuario: 1, blog: 1}, {unique: true});
