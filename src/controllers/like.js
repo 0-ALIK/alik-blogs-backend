@@ -1,4 +1,3 @@
-const { request, response } = require('express');
 const { errorPeticion } = require('../helpers/functions-helpers');
 const { Like } = require('../models');
 
@@ -16,7 +15,7 @@ const populationBlogs = {
     options: { strict: false }
 };
 
-const getUsuariosLike = async (req = request, res = response) => {
+const getUsuariosLike = async (req, res) => {
     try {
         const { blogid } = req.params;
 
@@ -35,7 +34,7 @@ const getUsuariosLike = async (req = request, res = response) => {
     }
 };
 
-const getBlogsLike = async (req = request, res = response) => {
+const getBlogsLike = async (req , res) => {
     try {
         const { userid } = req.params;
 
@@ -54,7 +53,7 @@ const getBlogsLike = async (req = request, res = response) => {
     }
 };
 
-const darLike = async (req = request, res = response) => {
+const darLike = async (req, res) => {
     try {
         const { blogid } = req.params; 
         const userid = req.usuarioAuth._id;
@@ -75,13 +74,17 @@ const darLike = async (req = request, res = response) => {
     }
 };
 
-const quitarLike = async (req = request, res = response) => {
+const quitarLike = async (req, res) => {
     try {
         const { blogid } = req.params; 
         const userid = req.usuarioAuth._id;
 
-        
-        //tokenRenovado: req.tokenRenovado
+        const like = await Like.deleteOne({usuario: userid, blog: blogid});
+    
+        res.status(200).json({
+            tokenRenovado: req.tokenRenovado,
+            like
+        });
     } catch (error) {
         errorPeticion( res, error );
     }
