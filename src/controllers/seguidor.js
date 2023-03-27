@@ -5,16 +5,7 @@ const getSeguidores = async (req, res  ) => {
     try {
         const { userid } = req.params;
 
-        const seguidores = await Seguidor.find({usuario: userid})
-            .select({ _id: 0, usuario: 0 })
-            .populate({
-                path: 'seguidor', 
-                match: { estado: true }, 
-                options: { strict: false },
-                select: '-pass -__v'
-            });
-            
-        const usuarios = seguidores.map(seguidor => seguidor.seguidor);
+        const usuarios = await seguidoresFn(userid);
 
         res.status(200).json({
             cantidad: usuarios.length,
@@ -61,16 +52,7 @@ const usuariosQueSigue = async (req, res  ) => {
     try {
         const { userid } = req.params;
 
-        const seguidos = await Seguidor.find({seguidor: userid})
-            .select({  _id: 0, seguidor: 0 })
-            .populate({
-                path: 'usuario', 
-                match: { estado: true }, 
-                options: { strict: false },
-                select: '-pass -__v'
-            });
-
-        const usuarios = seguidos.map(seguido => seguido.usuario);
+        const usuarios = await seguidosFn(userid);
 
         res.status(200).json({
             cantidad: usuarios.length,
@@ -80,6 +62,23 @@ const usuariosQueSigue = async (req, res  ) => {
         errorPeticion( res, error );
     }
 };
+
+const getSocial = async (req, res) => {
+    try {
+        const { userid } = req.params;
+
+        const seguidores = await seguidoresFn( userid );
+        const seguidos = await seguidosFn( userid );
+        
+        res.status(200).json({
+            seguidores,
+            seguidos
+        });
+    } catch (error) {
+        console.log(error)
+        errorPeticion(res, error);
+    }
+}
 
 const seguirUsuario = async (req, res  ) => {
     try {
@@ -123,10 +122,39 @@ const dejarDeSeguir = async (req, res  ) => {
     }
 };
 
+async function seguidosFn(userid) {
+    const seguidos = await Seguidor.find({ seguidor: userid })
+        .select({ _id: 0, seguidor: 0 })
+        .populate({
+            path: 'usuario',
+            match: { estado: true },
+            options: { strict: false },
+            select: '-pass -__v'
+        });
+
+    const usuarios = seguidos.map(seguido => seguido.usuario);
+    return usuarios;
+}
+
+async function seguidoresFn(userid) {
+    const seguidores = await Seguidor.find({ usuario: userid })
+        .select({ _id: 0, usuario: 0 })
+        .populate({
+            path: 'seguidor',
+            match: { estado: true },
+            options: { strict: false },
+            select: '-pass -__v'
+        });
+
+    const usuarios = seguidores.map(seguidor => seguidor.seguidor);
+    return usuarios;
+}
+
 module.exports = {
     getSeguidores,
     usuariosQueSigue,
     seguirUsuario,
     dejarDeSeguir,
-    getAmigos
+    getAmigos,
+    getSocial
 };

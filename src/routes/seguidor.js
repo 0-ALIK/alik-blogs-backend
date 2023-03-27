@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { seguirUsuario, dejarDeSeguir, usuariosQueSigue, getSeguidores, getAmigos } = require('../controllers/seguidor');
+const { seguirUsuario, dejarDeSeguir, usuariosQueSigue, getSeguidores, getAmigos, getSocial } = require('../controllers/seguidor');
 const { validarJWTMiddleware, mostrarErrores } = require('../middlewares');
 const { check } = require('express-validator');
 
@@ -19,6 +19,11 @@ router.get( '/amigos/:userid', [
     check('userid', 'el id debe ser un id de mongo').notEmpty().isMongoId(),
     mostrarErrores
 ], getAmigos);
+
+router.get( '/social/:userid', [
+    check('userid', 'el id debe ser un id de mongo').notEmpty().isMongoId(),
+    mostrarErrores
+], getSocial);
 
 // Requiere autenticación
 router.post( '/seguir/:userid', [
