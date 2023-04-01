@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getAll, getById, getAllByUserId, getByTitle, getAllNoPub, postBlog, putBlog, deleteBlog } = require('../controllers/blog');
+const { getAll, getById, getAllByUserId, getByTitle, getAllNoPub, postBlog, putBlog, deleteBlog, getByIdAuth } = require('../controllers/blog');
 const { validarExtension, noExisteBlogById } = require('../helpers/data-base-helpers');
 const { mostrarErrores, validarJWTMiddleware, moverArchivosAlBody, blogPerteneceUsuario } = require('../middlewares');
 
@@ -28,6 +28,13 @@ router.get( '/titulo/:titulo', [
 router.get( '/no/publicados', [
     validarJWTMiddleware
 ], getAllNoPub );
+
+// Requiere autenticación
+router.get( '/auth/:blogid', [
+    validarJWTMiddleware,
+    check('blogid', 'el id debe ser un id valido de mongo').notEmpty().isMongoId(),
+    mostrarErrores
+], getByIdAuth);
 
 // Requiere autenticación
 router.post( '/', [ 

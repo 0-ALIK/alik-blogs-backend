@@ -97,6 +97,26 @@ const getAllNoPub = async (req , res ) => {
     }
 };
 
+const getByIdAuth = async (req, res) => {
+    try {
+        const { blogid } = req.params;
+        const usuarioAuth = req.usuarioAuth;
+
+        const blog = await Blog.findOne({_id: blogid, usuario: usuarioAuth._id});
+
+        if(!blog) {
+            generarError(404, 'No existe blog', res);
+        }
+
+        res.status(200).json({
+            tokenRenovado: req.tokenRenovado,
+            blog
+        });
+    } catch (error) {
+        errorPeticion( res, error );
+    }
+};
+
 const postBlog = async (req , res ) => {
     try {
         const { titulo } = req.body;
@@ -188,5 +208,6 @@ module.exports = {
     getAllNoPub,
     postBlog,
     putBlog,
-    deleteBlog
+    deleteBlog,
+    getByIdAuth
 };

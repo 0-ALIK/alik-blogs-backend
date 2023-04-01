@@ -4,7 +4,6 @@ const { errorPeticion, generarError } = require('../helpers/functions-helpers');
 // /upload/subir
 const subir = async (req, res) => {
     try {
-        console.log('procesando petición de subir imagen.....')
         const { imagen } = req.body;
         const { path, msg } = await subirImagen( imagen.tempFilePath );
 
@@ -29,8 +28,9 @@ const borrar = async (req, res) => {
         await borrarImagen( src );
 
         res.status(200).json({
-            msg: 'imagen borrada'
-        })
+            tokenRenovado: req.tokenRenovado,
+            path: src
+        });
     } catch (error) {
         errorPeticion( res, error );
     }
