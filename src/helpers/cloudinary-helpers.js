@@ -1,5 +1,6 @@
 const cloudinary = require('cloudinary').v2;
 const CLOUDINARY_URL = process.env.CLOUDINARY_URL;
+const cheerio = require('cheerio');
 cloudinary.config( CLOUDINARY_URL );
 
 /**
@@ -23,15 +24,38 @@ const subirImagen = async tempFile => {
  */
 const borrarImagen = async (src = '') => {
     try {
-        srcSplit = src.split('/');
+        const srcSplit = src.split('/');
         const id = srcSplit[ srcSplit.length - 1 ].split('.')[0];
+
         await cloudinary.uploader.destroy( id );
     } catch (error) {
-        return 'algo salio mal al eliminar la imagen';
+        console.log(error);
     }
 }
 
+const borrarVariasImagen = async (text = '') => {
+    try {
+        const $ = cheerio.load(text);
+        const idList = $('img').map(function() {
+            const srcSplit = $(this).attr('src').split('/');
+            const id = srcSplit[ srcSplit.length - 1 ].split('.')[0];
+            return id;
+        }).get();
+
+        idList.forEach( async (id) => {
+            try {
+                await cloudinary.uploader.destroy( id );
+            } catch (error) {
+                console.log('Error al eliminar la imagen con id '+id);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 module.exports = {
+    borrarVariasImagen,
     subirImagen,
     borrarImagen
 };

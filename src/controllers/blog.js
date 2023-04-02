@@ -1,5 +1,5 @@
 const { errorPeticion, generarError } = require('../helpers/functions-helpers');
-const { subirImagen, borrarImagen } = require('../helpers/cloudinary-helpers');
+const { subirImagen, borrarImagen, borrarVariasImagen } = require('../helpers/cloudinary-helpers');
 const { Blog, Comentario, Like } = require('../models');
 
 const population = {
@@ -190,6 +190,8 @@ const deleteBlog = async (req , res ) => {
         if(blog.portada) {
             borrarImagen( blog.portada );
         }
+
+        borrarVariasImagen(blog.contenido); 
 
         res.status(200).json({
             tokenRenovado: req.tokenRenovado,
