@@ -41,7 +41,6 @@ class Server {
     middlewares() {
         this.app.use( cors() );
         this.app.use( express.json() );
-        this.app.use( express.static('../public') );
         this.app.use( fileUpload({
             useTempFiles : true,
             tempFileDir : '/tmp/'
@@ -52,9 +51,6 @@ class Server {
      * Define las rutas endpoints del API REST
      */
     rutas() {
-        this.app.get( '*', (req, res) => {
-            res.sendFile( path.resolve(__dirname, '../public/index.html') );
-        });
         this.app.use( this.paths.usuario, usuario );
         this.app.use( this.paths.blog, blog );
         this.app.use( this.paths.like, like );
