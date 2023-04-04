@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const connection = require('../config/connection');
 const fileUpload = require('express-fileupload');
 const { usuario, blog, like, seguidor, comentario, auth, upload } = require('../routes');
@@ -13,13 +14,13 @@ class Server {
         this.app = express();
         this.PORT = process.env.PORT;
         this.paths = {
-            usuario: '/usuario',
-            blog: '/blog',
-            like: '/like',
-            comentario: '/comentario',
-            seguidor: '/seguidor',
-            auth: '/auth',
-            upload: '/upload'
+            usuario: '/api/usuario',
+            blog: '/api/blog',
+            like: '/api/like',
+            comentario: '/api/comentario',
+            seguidor: '/api/seguidor',
+            auth: '/api/auth',
+            upload: '/api/upload'
         }
 
         this.connection(); 
@@ -40,6 +41,7 @@ class Server {
     middlewares() {
         this.app.use( cors() );
         this.app.use( express.json() );
+        this.app.use( express.static('../public') );
         this.app.use( fileUpload({
             useTempFiles : true,
             tempFileDir : '/tmp/'
@@ -50,6 +52,9 @@ class Server {
      * Define las rutas endpoints del API REST
      */
     rutas() {
+        this.app.get( '*', (req, res) => {
+            res.sendFile( path.resolve(__dirname, '../public/index.html') );
+        });
         this.app.use( this.paths.usuario, usuario );
         this.app.use( this.paths.blog, blog );
         this.app.use( this.paths.like, like );
